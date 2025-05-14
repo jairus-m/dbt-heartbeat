@@ -1,18 +1,17 @@
 [project]
-name = "dbt-cloud-job-poller"
+name = "dbt-heartbeat"
 version = "0.1.0"
-description = "A script to poll DBT Cloud jobs and send Slack notifications"
+description = "A CLI utility to poll dbt Cloud jobs and send macOS notifications"
 requires-python = ">=3.8"
 dependencies = [
     "requests==2.31.0",
     "python-dotenv==1.0.0",
-    "slack-sdk==3.26.1",
     "rich==13.7.0",
-    "pync"
+    "pync",
 ]
 
 [project.scripts]
-poll-dbt-job = "poll_dbt_job:main"
+dh = "dbt_heartbeat:main"
 
 [build-system]
 requires = ["setuptools>=61.0"]
@@ -20,4 +19,9 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
-packages = ["poll_dbt_job", "utils"]
+py-modules = ["dbt_heartbeat"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.11.9",
+]
