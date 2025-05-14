@@ -60,7 +60,7 @@ uv pip install -e .
 
 ## Configuration
 
-Create a `.env` file in the project root with your DBT Cloud credentials:
+Create a `.env` file in the project root with your dbt Cloud credentials:
 ```
 DBT_CLOUD_API_KEY=your_api_key
 DBT_CLOUD_ACCOUNT_ID=your_account_id

@@ -20,7 +20,7 @@ DBT_CLOUD_ACCOUNT_ID = os.getenv('DBT_CLOUD_ACCOUNT_ID')
 
 def get_job_status(job_run_id: str) -> dict:
     """
-    Get the status of a DBT Cloud job run.
+    Get the status of a dbt Cloud job run.
     Args:
         job_run_id (str): The ID of the dbt Cloud job run
     Returns:
@@ -114,7 +114,7 @@ def print_job_status(job_data: dict):
         table.add_row("Error", error_msg)
     
     # Print the table in a panel
-    console.print(Panel(table, title="DBT Cloud Job Status", border_style="blue"))
+    console.print(Panel(table, title="dbt Cloud Job Status", border_style="blue"))
     logger.debug("Job status table printed")
 
 def poll_job(job_run_id: str, poll_interval=30): 
