@@ -37,7 +37,7 @@ def get_job_status(job_run_id: str) -> dict:
     response.raise_for_status()
     
     data = response.json()
-    logger.debug(f"API Response: {data}")
+    logger.debug(f"Raw API Response: {data}")
     return data
 
 def get_job_details(job_id: dict) -> dict:
@@ -128,7 +128,10 @@ def poll_job(job_run_id: str, poll_interval=30):
         None
     """
     logger.info(f"Starting to poll job run {job_run_id} with interval {poll_interval}s")
-    console.print(f"[bold blue]Starting to poll job run {job_run_id}[/bold blue]")
+    console.print(f"[bold green]Starting to poll job run {job_run_id}[/bold green]")
+    
+    # Track the previous command to detect changes
+    previous_command = None
     
     while True:
         try:
@@ -136,13 +139,91 @@ def poll_job(job_run_id: str, poll_interval=30):
             job_data = get_job_status(job_run_id)
             data = job_data.get('data', {})
             
+            # Get job name and URL
+            job_url = data.get('href')
+            job_id = data.get('job_id')
+            job_name = 'Unknown'
+            
+            if job_id:
+                try:
+                    job_details = get_job_details(job_id)
+                    job_name = job_details.get('name', 'Unknown')
+                except Exception as e:
+                    logger.error(f"Failed to fetch job details: {e}")
+            
+            logger.debug(f"Full job data: {data}")
+            
             status = data.get('status_humanized', 'Unknown')
             duration = data.get('duration_humanized', 'Unknown')
             in_progress = data.get('in_progress', False)
             
-            logger.debug(f"Current status: {status}, Duration: {duration}, In Progress: {in_progress}")
+            # Get current step information safely
+            run_steps = data.get('run_steps', [])
+            logger.debug(f"Run steps data: {run_steps}")
             
-            # Print current status with color based on state
+            # Try to get the command from the current step
+            current_command = 'No command running'
+            
+            # If we have run steps, try to get command from there
+            if run_steps and len(run_steps) > 0:
+                logger.debug(f"Number of run steps: {len(run_steps)}")
+                for step in run_steps:
+                    logger.debug(f"Step data: {step}")
+                    step_status = step.get('status', 0)
+                    step_name = step.get('name')
+                    logger.debug(f"Step status: {step_status}, name: {step_name}")
+                    
+                    if step_name:
+                        current_command = step_name
+                        logger.debug(f"Found step with name: {step_name}")
+                        break
+                    
+                    if step_status == 1:  # Assuming 1 is the status code for running
+                        current_command = step_name if step_name else 'Running step'
+                        logger.debug(f"Found running step with status {step_status}")
+                        break
+            else:
+                # If no run steps, try to get command from job details
+                if job_id:
+                    try:
+                        job_details = get_job_details(job_id)
+                        logger.debug(f"Job details: {job_details}")
+                        if job_details and 'execute_steps' in job_details:
+                            steps = job_details['execute_steps']
+                            if steps and len(steps) > 0:
+                                current_command = steps[0]  # The first step is usually the main command
+                                logger.debug(f"Found command in job details: {current_command}")
+                    except Exception as e:
+                        logger.error(f"Failed to fetch job details: {e}")
+            
+            logger.debug(f"Current status: {status}, Duration: {duration}, In Progress: {in_progress}")
+            logger.debug(f"Current command: {current_command}")
+            
+            # Only print job info and command if it has changed
+            if current_command != previous_command:
+                # Print job name and URL
+                if job_url:
+                    console.print(f"[blue]Job Name: {job_name}[/blue]")
+                    console.print(f"[blue]Job URL: {job_url}[/blue]")
+                
+                # Print current command with color based on state
+                if data.get('is_success'):
+                    logger.debug("Job is successful")
+                    console.print(f"[blue]Current command: {current_command}[/blue]")
+                elif data.get('is_error'):
+                    logger.debug("Job has error")
+                    console.print(f"[blue]Current command: {current_command}[/blue]")
+                elif in_progress:
+                    logger.debug("Job is in progress")
+                    console.print(f"[blue]Current command: {current_command}[/blue]")
+                else:
+                    logger.debug("Job status unknown")
+                    console.print(f"[blue]Current command: {current_command}[/blue]")
+                
+                # Update previous command
+                previous_command = current_command
+            
+            # Always print current status
             if data.get('is_success'):
                 logger.debug("Job is successful")
                 console.print(f"[green]Current status: {status} (Duration: {duration})[/green]")

@@ -28,8 +28,6 @@ DBT_CLOUD_API_KEY = os.getenv('DBT_CLOUD_API_KEY')
 DBT_CLOUD_ACCOUNT_ID = os.getenv('DBT_CLOUD_ACCOUNT_ID')
 logger.debug(f"Using dbt Cloud Account ID: {DBT_CLOUD_ACCOUNT_ID}")
 
-
-
 def main():
     """
     Main function to handle command line arguments and start polling.
@@ -43,8 +41,11 @@ def main():
     
     args = parser.parse_args()
     
-    # Setup logging with the specified level
-    logger.setLevel(getattr(logging, args.log_level.upper()))
+    # Setup logging with the specified level for all loggers
+    log_level = getattr(logging, args.log_level.upper())
+    logging.getLogger().setLevel(log_level)
+    for logger_name in ['dbt_heartbeat', 'utils.dbt_cloud_api', 'utils.os_notifs']:
+        logging.getLogger(logger_name).setLevel(log_level)
     
     # Validate environment variables
     required_vars = ['DBT_CLOUD_API_KEY', 'DBT_CLOUD_ACCOUNT_ID']
