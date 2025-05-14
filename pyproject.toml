@@ -1,0 +1,23 @@
+[project]
+name = "dbt-cloud-job-poller"
+version = "0.1.0"
+description = "A script to poll DBT Cloud jobs and send Slack notifications"
+requires-python = ">=3.8"
+dependencies = [
+    "requests==2.31.0",
+    "python-dotenv==1.0.0",
+    "slack-sdk==3.26.1",
+    "rich==13.7.0",
+    "pync"
+]
+
+[project.scripts]
+poll-dbt-job = "poll_dbt_job:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["poll_dbt_job", "utils"]
