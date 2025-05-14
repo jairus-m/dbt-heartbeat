@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 import sys
 import logging
@@ -28,14 +26,16 @@ console = Console()
 # Configuration
 DBT_CLOUD_API_KEY = os.getenv('DBT_CLOUD_API_KEY')
 DBT_CLOUD_ACCOUNT_ID = os.getenv('DBT_CLOUD_ACCOUNT_ID')
-logger.debug(f"Using DBT Cloud Account ID: {DBT_CLOUD_ACCOUNT_ID}")
+logger.debug(f"Using dbt Cloud Account ID: {DBT_CLOUD_ACCOUNT_ID}")
 
 
 
 def main():
-    """Main function to handle command line arguments and start polling."""
-    parser = argparse.ArgumentParser(description='Poll DBT Cloud job status')
-    parser.add_argument('job_run_id', help='The ID of the DBT Cloud job run')
+    """
+    Main function to handle command line arguments and start polling.
+    """
+    parser = argparse.ArgumentParser(description='Poll dbt Cloud job status')
+    parser.add_argument('job_run_id', help='The ID of the dbt Cloud job run')
     parser.add_argument('--log-level', default='INFO', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
                       help='Set the logging level (default: INFO)')
     parser.add_argument('--poll-interval', type=int, default=30,

@@ -7,7 +7,7 @@ from rich.panel import Panel
 from rich.console import Console
 from dotenv import load_dotenv
 
-# Configure logging
+
 logger = logging.getLogger(__name__)
 console = Console()
 
@@ -18,8 +18,14 @@ load_dotenv()
 DBT_CLOUD_API_KEY = os.getenv('DBT_CLOUD_API_KEY')
 DBT_CLOUD_ACCOUNT_ID = os.getenv('DBT_CLOUD_ACCOUNT_ID')
 
-def get_job_status(job_run_id):
-    """Get the status of a DBT Cloud job run."""
+def get_job_status(job_run_id: str) -> dict:
+    """
+    Get the status of a DBT Cloud job run.
+    Args:
+        job_run_id (str): The ID of the dbt Cloud job run
+    Returns:
+        dict: The job data from dbt Cloud API endpoint (/v2/jobs/run/{run_id})
+    """
     url = f"https://cloud.getdbt.com/api/v2/accounts/{DBT_CLOUD_ACCOUNT_ID}/runs/{job_run_id}/"
     headers = {
         "Authorization": f"Token {DBT_CLOUD_API_KEY}",
@@ -34,8 +40,14 @@ def get_job_status(job_run_id):
     logger.debug(f"API Response: {data}")
     return data
 
-def get_job_details(job_id):
-    """Get the details of a DBT Cloud job."""
+def get_job_details(job_id: dict) -> dict:
+    """
+    Get the details of a dbt Cloud job.
+    Args:
+        job_id (str): The ID of the dbt Cloud job
+    Returns:
+        dict: The job data from dbt Cloud API endpoint (/v2/jobs/{job_id})
+    """
     url = f"https://cloud.getdbt.com/api/v2/accounts/{DBT_CLOUD_ACCOUNT_ID}/jobs/{job_id}/"
     headers = {
         "Authorization": f"Token {DBT_CLOUD_API_KEY}",
@@ -50,8 +62,14 @@ def get_job_details(job_id):
     logger.debug(f"Job details API Response: {data}")
     return data.get('data', {})
 
-def print_job_status(job_data):
-    """Print job status details to the terminal."""
+def print_job_status(job_data: dict):
+    """
+    Print job status details to the terminal.
+    Args:
+        job_data (dict): The job data from dbt Cloud API endpoint (/v2/jobs/run/{run_id})
+    Returns:
+        None
+    """
     logger.debug("Preparing to print job status")
     
     if not job_data:
@@ -99,13 +117,15 @@ def print_job_status(job_data):
     console.print(Panel(table, title="DBT Cloud Job Status", border_style="blue"))
     logger.debug("Job status table printed")
 
-def poll_job(job_run_id, poll_interval=30):
+def poll_job(job_run_id: str, poll_interval=30): 
     """
-    Poll the DBT Cloud API until the job is completed.
-    
+    Poll the dbt Cloud API until the job is completed 
+    and prints the job status to the terminal.
     Args:
-        job_run_id (str): The ID of the DBT Cloud job run
+        job_run_id (str): The ID of the dbt Cloud job run
         poll_interval (int): Time in seconds between polls
+    Returns:
+        None
     """
     logger.info(f"Starting to poll job run {job_run_id} with interval {poll_interval}s")
     console.print(f"[bold blue]Starting to poll job run {job_run_id}[/bold blue]")
