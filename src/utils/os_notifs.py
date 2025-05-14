@@ -5,12 +5,13 @@ from .dbt_cloud_api import get_job_details
 # Configure logging
 logger = logging.getLogger(__name__)
 
-def send_system_notification(job_data):
+def send_system_notification(job_data: dict):
     """
     Send a notification using pync.
-    
     Args:
-        job_data (dict): The job data from DBT Cloud API
+        job_data (dict): The job data from dbt Cloud API endpoint (/v2/jobs/run/{run_id})
+    Returns:
+        None
     """
     if not job_data:
         logger.error("No job data received for notification")
@@ -34,7 +35,7 @@ def send_system_notification(job_data):
     status = data.get('status_humanized', 'Unknown')
     duration = data.get('duration_humanized', 'Unknown')
     
-    # Determine emoji based on status
+    # Determine emoji based on status xD cause it's cute
     if data.get('is_success'):
         emoji = "✅"
     elif data.get('is_error'):
@@ -43,7 +44,7 @@ def send_system_notification(job_data):
         emoji = "⚠️"
     
     # Create notification title and message
-    title = f"{emoji} DBT Job Status Update"
+    title = f"{emoji} dbt Job Status Update"
     message = f"Job: {job_name}\nStatus: {status}\nDuration: {duration}"
     
     # Add error message if job failed
@@ -55,7 +56,7 @@ def send_system_notification(job_data):
         Notifier.notify(
             message,
             title=title,
-            sound='default',  # You can change this to other sounds like 'glass', 'basso', etc.
+            sound='default', 
             timeout=10  # Notification will stay for 10 seconds
         )
         logger.info("System notification sent successfully")
