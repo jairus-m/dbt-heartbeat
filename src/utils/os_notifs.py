@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from pync import Notifier
 from .dbt_cloud_api import get_job_details
 
@@ -35,6 +36,20 @@ def send_system_notification(job_data: dict):
     status = data.get('status_humanized', 'Unknown')
     duration = data.get('duration_humanized', 'Unknown')
     
+    # Format the end time in local time
+    finished_at = data.get('finished_at')
+    if finished_at:
+        try:
+            # Parse the UTC time and convert to local time
+            utc_time = datetime.fromisoformat(finished_at.replace('Z', '+00:00'))
+            local_time = utc_time.astimezone()
+            finished_at = local_time.strftime('%I:%M %p')
+        except Exception as e:
+            logger.error(f"Failed to format end time: {e}")
+            finished_at = 'Unknown'
+    else:
+        finished_at = 'Unknown'
+    
     # Determine emoji based on status xD cause it's cute
     if data.get('is_success'):
         emoji = "✅"
@@ -45,7 +60,7 @@ def send_system_notification(job_data: dict):
     
     # Create notification title and message
     title = f"{emoji} dbt Job Status Update"
-    message = f"Job: {job_name}\nStatus: {status}\nDuration: {duration}"
+    message = f"Job: {job_name}\nStatus: {status}\nDuration: {duration}\nCompleted: {finished_at}"
     
     # Add error message if job failed
     if data.get('is_error'):
@@ -59,6 +74,6 @@ def send_system_notification(job_data: dict):
             sound='default', 
             timeout=10  # Notification will stay for 10 seconds
         )
-        logger.info("System notification sent successfully")
+        logger.debug("System notification sent successfully")
     except Exception as e:
         logger.error(f"Failed to send system notification: {e}") 

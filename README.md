@@ -65,6 +65,11 @@ Create a `.env` file in the project root with your dbt Cloud credentials:
 DBT_CLOUD_API_KEY=your_api_key
 DBT_CLOUD_ACCOUNT_ID=your_account_id
 ```
+Or export them directly in your terminal session:
+```
+export DBT_CLOUD_API_KEY=your_dbt_cloud_api_key
+export DBT_CLOUD_ACCOUNT_ID=your_dbt_cloud_account_id
+```
 
 ## Usage
 
@@ -94,3 +99,18 @@ dh 123456
 # Poll job with debug logging and 15-second interval
 dh 123456 --log-level DEBUG --poll-interval 15
 ```
+
+#### Bash Output
+
+<img src="images/Screenshot 2025-05-15 at 7.47.02 AM.png" width="800">
+
+#### macOS Notification
+
+<img src="images/Screenshot 2025-05-15 at 7.28.22 AM.png" width="600">
+
+### Future Work & Limitations
+1. The dbt CLoud API has a [runs/ endpoint](https://docs.getdbt.com/dbt-cloud/api-v2#/operations/List%20Runs) that's supposed to have a `run_steps` key within the `data` dict.
+    - This would allow for dynamic output of which dbt command is running
+    - Unforunately, with dbt Cloud API v2, that endpoint has been unstable and is no longer populated leading to missing functionality for a better CLI status output
+2. I focused the notifications for my MacBook and thus, have used `pync` which is a wrapper for `terminal-notifer` for macOS system notifications
+    - So unfortuntaely, the current version does not support notifications for other OS systems (the CLI output should still work!)
