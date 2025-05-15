@@ -29,7 +29,8 @@ jobs:
         run: |
           source .venv/bin/activate
           uv pip install -e ".[dev]"
-        
+          uv pip install ruff
+          
       - name: Run ruff
         run: |
           source .venv/bin/activate
