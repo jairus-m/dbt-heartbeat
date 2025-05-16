@@ -30,7 +30,7 @@ jobs:
           source .venv/bin/activate
           uv pip install -e ".[dev]"
           uv pip install ruff
-          
+      
       - name: Run ruff
         run: |
           source .venv/bin/activate
@@ -67,10 +67,12 @@ jobs:
           uv publish
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.UV_PUBLISH_TOKEN }}
-          
+
       - name: Get version from pyproject.toml
         id: get_version
         run: |
+          source .venv/bin/activate
+          uv add tomli
           VERSION=$(python -c "import tomli; print(tomli.load(open('pyproject.toml', 'rb'))['project']['version'])")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           
@@ -84,4 +86,4 @@ jobs:
             
             Published to PyPI: https://pypi.org/project/dbt-heartbeat/${{ steps.get_version.outputs.version }}/
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
