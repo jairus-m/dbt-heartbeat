@@ -2,11 +2,33 @@ import os
 import sys
 import logging
 import argparse
+from pathlib import Path
 from dotenv import load_dotenv
 from rich.console import Console
+import tomllib
 
 from utils.dbt_cloud_api import poll_job
 from utils.os_notifs import send_system_notification
+
+def get_version():
+    """
+    Read version from pyproject.toml
+    Args:
+        None
+    Returns:
+        None
+    """
+    try:
+        pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
+        with open(pyproject_path, "rb") as f:
+            pyproject = tomllib.load(f)
+        return pyproject["project"]["version"]
+    except Exception as e:
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Could not read version from pyproject.toml: {e}")
+        return "unknown"
+
+__version__ = get_version()
 
 # Configure logging
 logging.basicConfig(
@@ -34,7 +56,7 @@ def main():
     Main function to handle command line arguments and start polling.
     """
     parser = argparse.ArgumentParser(description="Poll dbt Cloud job status")
-    parser.add_argument("job_run_id", help="The ID of the dbt Cloud job run")
+    parser.add_argument("job_run_id", nargs="?", help="The ID of the dbt Cloud job run")
     parser.add_argument(
         "--log-level",
         default="INFO",
@@ -47,8 +69,19 @@ def main():
         default=30,
         help="Time in seconds between polls (default: 30)",
     )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+        help="Show the version number and exit",
+    )
 
     args = parser.parse_args()
+
+    # If no job_run_id is provided and --version wasn't used, show help
+    if args.job_run_id is None:
+        parser.print_help()
+        sys.exit(1)
 
     # Setup logging with the specified level for all loggers
     log_level = getattr(logging, args.log_level.upper())
