@@ -40,15 +40,17 @@ dbt-heartbeat/
 - dbt Cloud account with API access ([via the dbt developer PAT](https://docs.getdbt.com/docs/dbt-cloud-apis/user-tokens#create-a-personal-access-token))
 - macOS (for system notifications)
 
+__Note:__ This package is designed to be installed using `uv`, a modern Python package installer and resolver. While `uv` offers improved performance and dependency management capabilities, some project dependencies (like `pync`) still rely on legacy build artifacts that aren't fully compatible with modern Python packaging standards. As a result, installation via `pip` is not currently supported, but you can use `uv` with pip-compatible commands like `uv pip install dbt-heartbeat`. The following section will guide you through the installation process using `uv`!
+
 ## Installation - For General Use
 1. Add dbt environment variables to your `~/.zshrc` directory
    - Refer to the guide below for global export of environment variables for all terminal sessions
    - Other options are noted as well for non-global export of environment variables
 2. Install [uv](https://docs.astral.sh/uv/getting-started/installation/#__tabbed_1_1)
     - Check the installation with `uv --version`
-3. Global installation of `dbt-helper`:
-    - Run `uv tools install dbt-herlper`
-    - This will make `dbt-helper` globally available on all terminal sessions
+3. Global installation of `dbt-heartbeat`:
+    - Run `uv tools install dbt-heartbeat`
+    - This will make `dbt-heartbeat` globally available on all terminal sessions
 4. Check the installation with `dh --version`
 5. Poll a job!
     - `dh <job_id>`
