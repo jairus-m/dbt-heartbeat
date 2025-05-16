@@ -2,33 +2,17 @@ import os
 import sys
 import logging
 import argparse
-from pathlib import Path
 from dotenv import load_dotenv
 from rich.console import Console
-import tomllib
+from importlib.metadata import version, PackageNotFoundError
 
 from utils.dbt_cloud_api import poll_job
 from utils.os_notifs import send_system_notification
 
-def get_version():
-    """
-    Read version from pyproject.toml
-    Args:
-        None
-    Returns:
-        None
-    """
-    try:
-        pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
-        with open(pyproject_path, "rb") as f:
-            pyproject = tomllib.load(f)
-        return pyproject["project"]["version"]
-    except Exception as e:
-        logger = logging.getLogger(__name__)
-        logger.warning(f"Could not read version from pyproject.toml: {e}")
-        return "unknown"
-
-__version__ = get_version()
+try:
+    __version__ = version("dbt-heartbeat")
+except PackageNotFoundError:
+    __version__ = "unknown"
 
 # Configure logging
 logging.basicConfig(
