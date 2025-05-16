@@ -1,0 +1,89 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.8'
+          
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          
+      - name: Create virtual environment
+        run: uv venv
+          
+      - name: Install dependencies
+        run: |
+          source .venv/bin/activate
+          uv pip install -e ".[dev]"
+          uv pip install ruff
+      
+      - name: Run ruff
+        run: |
+          source .venv/bin/activate
+          ruff check .
+
+  publish:
+    needs: lint
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.8'
+          
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          
+      - name: Create virtual environment
+        run: uv venv
+          
+      - name: Build package
+        run: |
+          source .venv/bin/activate
+          uv build
+        
+      - name: Publish to PyPI
+        run: |
+          source .venv/bin/activate
+          uv publish
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.UV_PUBLISH_TOKEN }}
+
+      - name: Get version from pyproject.toml
+        id: get_version
+        run: |
+          source .venv/bin/activate
+          uv add tomli
+          VERSION=$(python -c "import tomli; print(tomli.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          name: Release v${{ steps.get_version.outputs.version }}
+          body: |
+            Release v${{ steps.get_version.outputs.version }}
+            
+            Published to PyPI: https://pypi.org/project/dbt-heartbeat/${{ steps.get_version.outputs.version }}/
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
