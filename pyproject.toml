@@ -1,6 +1,6 @@
 [project]
 name = "dbt-heartbeat"
-version = "0.1.8"
+version = "0.1.9"
 description = "A CLI utility to poll dbt Cloud jobs and send macOS notifications"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -26,6 +26,7 @@ packages = ["utils"]
 
 [dependency-groups]
 dev = [
+    "pre-commit>=3.5.0",
     "ruff>=0.11.9",
     "setuptools>=75.3.2",
 ]
