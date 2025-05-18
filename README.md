@@ -1,4 +1,4 @@
-# dbt Cloud Job Poller
+# dbt-heartbeat
 
 A CLI tool to poll dbt Cloud jobs and send system (macOS) notifications about their status.
 
@@ -37,10 +37,14 @@ dbt-heartbeat/
 ## Prerequisites
 
 - Python 3.8 or higher
+- Mac OS X 10.8 or higher
 - dbt Cloud account with API access ([via the dbt developer PAT](https://docs.getdbt.com/docs/dbt-cloud-apis/user-tokens#create-a-personal-access-token))
-- macOS (for system notifications)
+- A Python package manager such as:
+  - `uv>=0.6.11`
+  - `pip>=25.1.1`
 
-__Note:__ This package is designed to be installed using `uv`, a modern Python package installer and resolver. While `uv` offers improved performance and dependency management capabilities, some project dependencies (like `pync`) still rely on legacy build artifacts that aren't fully compatible with modern Python packaging standards. As a result, installation via `pip` is not currently supported, but you can use `uv` with pip-compatible commands like `uv pip install dbt-heartbeat`. The following section will guide you through the installation process using `uv`!
+
+__NOTE:__ While `uv` is the preferred method for installation, `dbt-heartbeat` can also be installed via `pip install dbt-heartbeat`.
 
 ## Installation - For General Use
 1. Add dbt environment variables to your `~/.zshrc` directory
@@ -77,7 +81,7 @@ source .venv/bin/activate # activate
 5. Run `dh <job_id> --log-level DEBUG`
 
 
-## Configuratin Guide for Environment Variables
+## Configuration Guide for Environment Variables
 
 #### For global export
 If you want to persist the environment variables in all terminal sessions without having to utilize a `.env` file or manually exporting the variables in your terminal session, you can add the export commands to your `~/.zshrc` directory. (persisted)
@@ -97,7 +101,7 @@ DBT_CLOUD_ACCOUNT_ID=your_account_id
 ```
 
 #### For exporting manually in the terminal
-Or export them directly in your terminal session:
+Or export environment variables directly in your terminal session:
 - Exporting is scoped to the specific terminal session you are in (ephemeral)
 ```
 # run these in the terminal
@@ -108,10 +112,11 @@ export DBT_CLOUD_ACCOUNT_ID=your_dbt_cloud_account_id
 
 ## Usage
 
-For help / version:
+For help / version / installation location:
 ```bash
 dh --help
 dh --version
+which dh
 ```
 
 Poll a dbt Cloud job:
