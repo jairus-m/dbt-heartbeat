@@ -1,6 +1,6 @@
 [project]
 name = "dbt-heartbeat"
-version = "0.1.7"
+version = "0.1.8"
 description = "A CLI utility to poll dbt Cloud jobs and send macOS notifications"
 readme = "README.md"
 requires-python = ">=3.8"
