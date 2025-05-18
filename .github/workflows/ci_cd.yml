@@ -27,8 +27,8 @@ jobs:
           fi
 
   lint:
-    needs: ci-version-check
-    if: github.event_name == 'pull_request'
+    #needs: ci-version-check
+    #if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
       - name: Run ruff
         run: |
           uv tool install ruff
-          uv run ruff check .
+          ruff check .
 
   cd-version-check:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
