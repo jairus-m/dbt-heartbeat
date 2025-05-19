@@ -1,7 +1,7 @@
 [project]
 name = "dbt-heartbeat"
-version = "0.1.11"
-description = "A CLI tool to monitor individual dbt Cloud jobs and receive macOS notifications when they complete."
+version = "0.1.12"
+description = "A CLI tool to monitor individual dbt Cloud run jobs and receive macOS notifications when they complete."
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
