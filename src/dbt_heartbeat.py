@@ -39,7 +39,11 @@ def main():
     """
     Main function to handle command line arguments and start polling.
     """
-    parser = argparse.ArgumentParser(description="Poll dbt Cloud job status")
+    parser = argparse.ArgumentParser(
+        description="Poll dbt Cloud job statuses for specific runs.\n"
+        "\nRequires environment variables DBT_CLOUD_API_KEY and DBT_CLOUD_ACCOUNT_ID to be set.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     parser.add_argument("job_run_id", nargs="?", help="The ID of the dbt Cloud job run")
     parser.add_argument(
         "--log-level",
@@ -57,7 +61,7 @@ def main():
         "--version",
         action="version",
         version=f"%(prog)s {__version__}",
-        help="Show the version number and exit",
+        help="Show the version number",
     )
 
     args = parser.parse_args()
@@ -82,12 +86,15 @@ def main():
         console.print(
             f"[red]Missing required environment variables: {', '.join(missing_vars)}[/red]"
         )
-        console.print("\n[red]Add them to a .env file:[/red]")
-        for var in missing_vars:
-            console.print(f"[red]{var}=your_{var.lower()}[/red]")
-        console.print("\n[red]Or export them directly in your terminal:[/red]")
+        console.print(
+            "\n[red]Export them directly in your terminal (or shell configuration file):[/red]"
+        )
         for var in missing_vars:
             console.print(f"[red]export {var}=your_{var.lower()}[/red]")
+        console.print("\n[red]Or add them to a .env file:[/red]")
+        for var in missing_vars:
+            console.print(f"[red]{var}=your_{var.lower()}[/red]")
+
         sys.exit(1)
     logger.debug("Environment variables validated")
     final_status = poll_job(args.job_run_id, args.poll_interval)
