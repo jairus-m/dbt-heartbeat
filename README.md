@@ -56,7 +56,7 @@ __NOTE:__ While `uv` is the recommended method for installing `dbt-heartbeat`, y
    - Other options are noted as well for non-global export of environment variables
 2. Install [uv](https://docs.astral.sh/uv/getting-started/installation/#__tabbed_1_1)
     - Check the installation with `uv --version`
-3. Global installation of `dbt-heartbeat`:
+3. Global installation:
     - Run `uv tools install dbt-heartbeat`
     - This will make `dbt-heartbeat` globally available on all terminal sessions
 4. Check the installation with `dh --version`
@@ -129,6 +129,11 @@ dh --version
 For installation location:
 ```bash
 which dh
+```
+
+To upgrade:
+```bash
+uv tool upgrade dbt-heartbeat
 ```
 
 Poll a dbt Cloud run job:
