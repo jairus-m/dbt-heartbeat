@@ -33,7 +33,7 @@ jobs:
           fi
 
   lint:
-    # if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -44,7 +44,7 @@ jobs:
           uv tool install ruff
           ruff check .
 
-  build:
+  test-build:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
