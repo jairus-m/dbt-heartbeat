@@ -33,20 +33,26 @@ jobs:
           fi
 
   lint:
-    if: github.event_name == 'pull_request'
+    # if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - uses: ./.github/actions/setup
       
       - name: Run ruff
         run: |
           uv tool install ruff
           ruff check .
+
+  build:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      
+      - name: Test build
+        run: uv build
 
   cd-version-check:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -55,6 +61,7 @@ jobs:
       version_exists: ${{ steps.check_version.outputs.version_exists }}
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
       
       - name: Check version on PyPI
         id: check_version
@@ -80,11 +87,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      
-      - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - uses: ./.github/actions/setup
           
       - name: Build and publish
         run: |
@@ -102,6 +105,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+      - uses: ./.github/actions/setup
       
       - name: Get version from pyproject.toml
         id: get_version
