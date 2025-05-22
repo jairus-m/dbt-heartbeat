@@ -77,9 +77,8 @@ cd dbt-heartbeat
 
 4. Create and activate the virtual environment:
 ```bash
-uv venv # initialize
-uv sync # sync
-source .venv/bin/activate # activate
+uv sync # sync deps + editable packageinstall
+source .venv/bin/activate # activate venv
 ```
 
 5. Run `dh <job_run_id> --log-level DEBUG`
