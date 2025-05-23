@@ -1,7 +1,6 @@
 import logging
 from pync import Notifier
 
-# Configure logging
 logger = logging.getLogger(__name__)
 
 
@@ -25,8 +24,6 @@ def send_system_notification(job_details: dict):
     Send a notification using pync.
     Args:
         job_details (dict): The job details including name, status, duration, etc.
-    Returns:
-        None
     """
     if not job_details:
         logger.error("No job details received for notification")
@@ -49,7 +46,7 @@ def send_system_notification(job_details: dict):
             message,
             title=title,
             sound="default",
-            timeout=10,  # Notification will stay for 10 seconds
+            timeout=10,
         )
         logger.debug("System notification sent successfully")
     except Exception as e:

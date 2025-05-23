@@ -1,19 +1,18 @@
-import os
 import sys
 import logging
 import argparse
 
 from utils.api import DbtCloudApi, JobMonitor
 from utils.notifications import send_system_notification
-from utils.config import load_environment, validate_environment_vars
+from utils.config import validate_environment_vars, load_env_vars
 from utils.display import print_job_status, print_missing_env_vars
 from utils.version import check_version, get_current_version
 
 dbt_api = DbtCloudApi()
 job_monitor = JobMonitor(dbt_api)
+
 __version__ = get_current_version()
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -21,20 +20,12 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Load environment variables
-load_environment()
-
-# Configuration
-DBT_CLOUD_API_KEY = os.getenv("DBT_CLOUD_API_KEY")
-DBT_CLOUD_ACCOUNT_ID = os.getenv("DBT_CLOUD_ACCOUNT_ID")
-logger.debug(f"Using dbt Cloud Account ID: {DBT_CLOUD_ACCOUNT_ID}")
-
 
 def main():
     """
     Main function to handle command line arguments and start polling.
     """
-    # First, create a basic parser just for log level
+    # Create a basic parser just for log level
     log_parser = argparse.ArgumentParser(add_help=False)
     log_parser.add_argument(
         "--log-level",
@@ -51,14 +42,18 @@ def main():
     logging.getLogger().setLevel(log_level)
     for logger_name in [
         "dbt_heartbeat",
-        "utils.dbt_cloud_api",
-        "utils.os_notifs",
-        "utils.version_check",
-        "utils.job_monitor",
+        "utils.api.dbt_cloud_api",
+        "utils.notifications",
+        "utils.version",
+        "utils.api.job_monitor",
+        "utils.config.env",
     ]:
         logging.getLogger(logger_name).setLevel(log_level)
 
-    # Now check for version flag
+    # Load environment variables
+    load_env_vars()
+
+    # Check for version flag
     if "--version" in sys.argv:
         check_version()
         # Let argparse handle the version display and exit

@@ -21,7 +21,6 @@ class JobMonitor:
 
     This class handles the polling logic for monitoring job runs, including
     displaying initial job information, status updates, and final results.
-
     Attributes:
         api (DbtCloudApi): Instance of DbtCloudApi for making API calls
     Methods:
@@ -32,7 +31,6 @@ class JobMonitor:
     def __init__(self, api: DbtCloudApi = None):
         """
         Initialize the JobMonitor with an optional DbtCloudApi instance.
-
         Args:
             api (DbtCloudApi, optional): Instance of DbtCloudApi. If not provided,
                                         a new instance will be created.
@@ -42,14 +40,11 @@ class JobMonitor:
     def monitor_job(self, job_run_id: str, poll_interval: int = 30) -> dict:
         """
         Monitor a dbt Cloud job run until completion.
-
         Args:
             job_run_id (str): The ID of the dbt Cloud job run
             poll_interval (int): Time in seconds between polls
-
         Returns:
             dict: The final job data
-
         Raises:
             requests.exceptions.RequestException: If there are API communication errors
         """
