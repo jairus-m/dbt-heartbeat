@@ -45,7 +45,7 @@ __NOTE:__ While `uv` is the recommended method for installing `dbt-heartbeat`, y
 5. Poll a job run!
     - `dh <job_run_id>`
 
-## Upgrade:
+### Upgrading:
 ```bash
 uv tool upgrade dbt-heartbeat
 ```
@@ -106,11 +106,13 @@ dh 123456 --log-level DEBUG --poll-interval 15
 
 #### Terminal Output
 
-<img src="images/Screenshot 2025-05-15 at 7.47.02 AM.png" width="800">
+<img width="1471" alt="Screenshot 2025-05-15 at 7 47 02 AM" src="https://github.com/user-attachments/assets/84e60b52-60c9-450a-b4c3-3eb9fb7318c6" />
+
 
 #### macOS Notification
 
-<img src="images/Screenshot 2025-05-18 at 7.54.19 PM.png" width="600">
+<img width="644" alt="Screenshot 2025-05-18 at 7 54 19 PM" src="https://github.com/user-attachments/assets/77d4f851-a9f7-492d-946d-a220ad536901" />
+
 
 ### Future Work & Limitations
 1. The dbt CLoud API has a [runs endpoint](https://docs.getdbt.com/dbt-cloud/api-v2#/operations/List%20Runs) that's supposed to have a `run_steps` key within the `data` JSON object.
