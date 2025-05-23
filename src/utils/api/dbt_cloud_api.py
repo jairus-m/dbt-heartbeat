@@ -2,21 +2,15 @@ import os
 import logging
 import requests
 from datetime import datetime
-from rich.console import Console
-from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
-console = Console()
-
-# Load environment variables
-load_dotenv()
 
 
 class DbtCloudApi:
     """
     A class to interact with the dbt Cloud API.
 
-    This class provides methods to fetch job statuses, details and artifacts from dbt Cloud.
+    This class provides methods to fetch job statuses and run details from dbt Cloud.
     It requires DBT_CLOUD_API_KEY and DBT_CLOUD_ACCOUNT_ID environment variables to be set.
 
     Attributes:
