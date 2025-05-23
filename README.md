@@ -20,24 +20,6 @@ All you need is a dbt Cloud developer PAT, dbt Cloud account ID, and a specific 
 - Can control the log level of the CLI output
 - Detailed job run status information once complete in CLI + macOS notification center
 
-## Project Structure
-
-```bash
-dbt-heartbeat/
-└── .github/
-    └── workflows/
-        └── ci_cd.yml         # CI/CD: lint, Publish to PyPi, GitHub Release
-├── src/
-│   ├── dbt_heartbeat.py      # Main Python module/entrypoint
-│   └── utils/
-│       ├── __init__.py
-│       ├── dbt_cloud_api.py  # dbt Cloud API interactions
-│       └── os_notifs.py      # macOS notifs
-├── .pre-commit-config.yaml   # Pre-commits
-├── pyproject.toml
-└── README.md
-```
-
 ## Prerequisites
 
 - Python 3.8 or higher
@@ -63,25 +45,10 @@ __NOTE:__ While `uv` is the recommended method for installing `dbt-heartbeat`, y
 5. Poll a job run!
     - `dh <job_run_id>`
 
-## Installation - For Contributors
-
-1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/#__tabbed_1_1)
-
-2. Clone the repository:
+## Upgrade:
 ```bash
-git clone git@github.com:jairus-m/dbt-heartbeat.git
-cd dbt-heartbeat
+uv tool upgrade dbt-heartbeat
 ```
-
-3. Add required environment variables in a `.env` file within your local repository's root directory
-
-4. Create and activate the virtual environment:
-```bash
-uv sync # sync deps + editable packageinstall
-source .venv/bin/activate # activate venv
-```
-
-5. Run `dh <job_run_id> --log-level DEBUG`
 
 
 ## Configuration Guide for Environment Variables
@@ -92,15 +59,6 @@ If you want to persist the environment variables in all terminal sessions withou
 # in shell configuration file (i.e `~/.zshrc` or `~/.bashrc`)
 export DBT_CLOUD_API_KEY=your_dbt_cloud_api_key
 export DBT_CLOUD_ACCOUNT_ID=your_dbt_cloud_account_id
-```
-
-#### For using a .env file
-- Create a `.env` file in the project root with your dbt Cloud credentials
-- The `.env` file is scoped to the terminal session that is loaded from the same working directory (persisted in project directory)
-```
-# add these to a .env file at the root of your directory
-DBT_CLOUD_API_KEY=your_api_key
-DBT_CLOUD_ACCOUNT_ID=your_account_id
 ```
 
 #### For exporting manually in the terminal
@@ -118,21 +76,6 @@ export DBT_CLOUD_ACCOUNT_ID=your_dbt_cloud_account_id
 For help:
 ```bash
 dh --help
-```
-
-For version:
-```bash
-dh --version
-```
-
-For installation location:
-```bash
-which dh
-```
-
-To upgrade:
-```bash
-uv tool upgrade dbt-heartbeat
 ```
 
 Poll a dbt Cloud run job:
