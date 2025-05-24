@@ -125,6 +125,8 @@ def main():
     logger.debug("Attempting to send system notification...")
     send_system_notification(job_run_info)
 
+    sys.exit(0)
+
 
 if __name__ == "__main__":
     main()
