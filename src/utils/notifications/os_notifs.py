@@ -1,7 +1,13 @@
 import logging
-from pync import Notifier
+import sys
 
 logger = logging.getLogger(__name__)
+
+# Only import pync on macOS
+if sys.platform == "darwin":
+    from pync import Notifier
+else:
+    Notifier = None
 
 
 def get_status_emoji(job_details: dict) -> str:
@@ -27,6 +33,10 @@ def send_system_notification(job_details: dict):
     """
     if not job_details:
         logger.error("No job details received for notification")
+        return
+
+    if sys.platform != "darwin":
+        logger.debug("System notifications are only supported on macOS")
         return
 
     emoji = get_status_emoji(job_details)
