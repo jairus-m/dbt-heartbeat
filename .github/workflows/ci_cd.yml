@@ -60,6 +60,7 @@ jobs:
           DBT_CLOUD_ACCOUNT_ID: ${{ secrets.DBT_CLOUD_ACCOUNT_ID }}
 
   test-build:
+    needs: [lint, unit-tests]
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
