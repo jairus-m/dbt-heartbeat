@@ -10,6 +10,7 @@ skip_if_not_macos = pytest.mark.skipif(
 )
 
 
+@skip_if_not_macos
 @patch("utils.notifications.os_notifs.Notifier")
 def test_notification_cancelled_mock(mock_notifier, sample_job_run_data, job_states):
     """Test that notifications are sent correctly when a job is cancelled."""
@@ -20,6 +21,7 @@ def test_notification_cancelled_mock(mock_notifier, sample_job_run_data, job_sta
     assert_notification_content(message, "Test Job", "Cancelled")
 
 
+@skip_if_not_macos
 @patch("utils.notifications.os_notifs.Notifier")
 def test_notification_error_mock(mock_notifier, sample_job_run_data, job_states):
     """Test that notifications are sent correctly when a job fails."""
