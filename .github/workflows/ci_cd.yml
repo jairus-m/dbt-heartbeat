@@ -54,7 +54,10 @@ jobs:
       - name: Pytest
         run: |
           uv venv
-          uv run pytest        
+          uv run pytest
+        env:
+          DBT_CLOUD_API_KEY: ${{ secrets.DBT_CLOUD_API_KEY }}
+          DBT_CLOUD_ACCOUNT_ID: ${{ secrets.DBT_CLOUD_ACCOUNT_ID }}
 
   test-build:
     if: github.event_name == 'pull_request'
