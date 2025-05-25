@@ -44,6 +44,18 @@ jobs:
           uv tool install ruff
           ruff check .
 
+  unit-tests:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      
+      - name: Pytest
+        run: |
+          uv venv
+          uv run pytest        
+
   test-build:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
