@@ -56,7 +56,6 @@ def check_version() -> None:
         console.print(
             f"\n[yellow]A new version of dbt-heartbeat is available: {latest}[/yellow]"
             f"\n[yellow]You are currently using version: {current}[/yellow]"
-            f"\n[yellow]To upgrade, run: uv tool updgrade dbt-heartbeat[/yellow]\n"
         )
     else:
         logger.debug("Version is up to date")
