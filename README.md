@@ -9,21 +9,20 @@ When working with large dbt projects that utilize a merge queue, developers ofte
 1. **Manual Monitoring**: Instead of repeatedly checking job status or working on other things and forgetting about your dbt job and holding up the merge queue, automatically get notified when your specific run job completes.
 2. **Notification Control**: AFAIK, dbt Cloud does not have notifications for job-specific runs. You can get notifications for all jobs of a specific environment/deployment, but not for specific runs within those environment/deployment jobs (i.e your own CI jobs in a staging environment).
 
-All you need is a dbt Cloud developer PAT, dbt Cloud account ID, and a specific job run ID, and you'll be able to watch the status of the job run in your terminal and get notified in the macOS notification center when the job finishes.
+All you need is a dbt Cloud developer PAT, dbt Cloud account ID, and a specific job run ID, and you'll be able to watch the status of the job run in your terminal and get notified when the job finishes.
 
 ## Features
 
 - Poll dbt Cloud job runs and monitor their status
 - Cute terminal output with color-coded status updates xD
-- System notifications for job completion (alerts sent to the macOS notification center)
+- System notifications for job completion (alerts sent to Mac/Windows OS notifications)
 - Configurable polling interval
 - Can control the log level of the CLI output
-- Detailed job run status information once complete in CLI + macOS notification center
+- Detailed job run status information once complete in CLI + system notifications
 
 ## Prerequisites
 
 - Python 3.8 or higher
-- Mac OS X 10.8 or higher
 - dbt Cloud account with API access ([via the dbt developer PAT](https://docs.getdbt.com/docs/dbt-cloud-apis/user-tokens#create-a-personal-access-token))
 - A Python package manager such as:
   - `uv>=0.6.11`
@@ -52,6 +51,13 @@ uv tool upgrade dbt-heartbeat
 
 
 ## Configuration Guide for Environment Variables
+
+The following environment variables are required and must be properly set:
+
+- `DBT_CLOUD_API_KEY`: Your dbt Cloud API key (must be non-empty)
+- `DBT_CLOUD_ACCOUNT_ID`: Your dbt Cloud account ID (must be non-empty)
+
+The tool will validate these variables before starting and will notify you if any are missing or invalid.
 
 #### For global export
 If you want to persist the environment variables in all terminal sessions without having to utilize a `.env` file or manually exporting the variables in your terminal session, you can add the export commands to your shell configuration file. (persisted)
@@ -106,19 +112,16 @@ dh 123456 --log-level DEBUG --poll-interval 15
 
 #### Terminal Output
 
-<img width="1471" alt="Screenshot 2025-05-15 at 7 47 02 AM" src="https://github.com/user-attachments/assets/84e60b52-60c9-450a-b4c3-3eb9fb7318c6" />
+<img width="1471" alt="Screenshot 2025-05-15 at 7 47 02 AM" src="https://github.com/user-attachments/assets/84e60b52-60c9-450a-b4c3-3eb9fb7318c6" />
 
 
 #### macOS Notification
 
-<img width="644" alt="Screenshot 2025-05-18 at 7 54 19 PM" src="https://github.com/user-attachments/assets/77d4f851-a9f7-492d-946d-a220ad536901" />
+<img width="644" alt="Screenshot 2025-05-18 at 7 54 19 PM" src="https://github.com/user-attachments/assets/77d4f851-a9f7-492d-946d-a220ad536901" />
 
 
 ### Future Work & Limitations
-1. The dbt CLoud API has a [runs endpoint](https://docs.getdbt.com/dbt-cloud/api-v2#/operations/List%20Runs) that's supposed to have a `run_steps` key within the `data` JSON object.
-    - This would allow for dynamic output of which dbt command is *currently* running
-    - Unfortunately, with dbt Cloud API v2, that endpoint has been unstable and is no longer populated leading to missing functionality for an enhanced CLI status output
-2. I focused the notifications for my MacBook and thus, have used `pync` which is a wrapper for `terminal-notifer` (macOS-specific system notifications)
-    - So unfortunately, this current version does not support notifications for other OS systems
-    - Support for Windows is the goal for `v0.2.0`
-3. Would like to add unit tests
+The dbt CLoud API has a [runs endpoint](https://docs.getdbt.com/dbt-cloud/api-v2#/operations/List%20Runs) that's supposed to have a `run_steps` key within the `data` JSON object.
+- This would allow for dynamic output of which dbt command is *currently* running
+- Unfortunately, with dbt Cloud API v2, that endpoint has been unstable and is no longer populated leading to missing functionality for an enhanced CLI status output
+
