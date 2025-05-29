@@ -3,11 +3,16 @@ import sys
 
 logger = logging.getLogger(__name__)
 
-# Only import pync on macOS
+# Import platform-specific notification modules
 if sys.platform == "darwin":
     from pync import Notifier
+elif sys.platform == "win32":
+    from win10toast import ToastNotifier
+
+    toaster = ToastNotifier()
 else:
     Notifier = None
+    toaster = None
 
 
 def get_status_emoji(job_details: dict) -> str:
@@ -27,16 +32,12 @@ def get_status_emoji(job_details: dict) -> str:
 
 def send_system_notification(job_details: dict):
     """
-    Send a notification using pync.
+    Send a notification using platform-specific notification system.
     Args:
         job_details (dict): The job details including name, status, duration, etc.
     """
     if not job_details:
         logger.error("No job details received for notification")
-        return
-
-    if sys.platform != "darwin":
-        logger.debug("System notifications are only supported on macOS")
         return
 
     emoji = get_status_emoji(job_details)
@@ -52,12 +53,24 @@ def send_system_notification(job_details: dict):
         )
 
     try:
-        Notifier.notify(
-            message,
-            title=title,
-            sound="default",
-            timeout=10,
-        )
+        if sys.platform == "darwin":
+            Notifier.notify(
+                message,
+                title=title,
+                sound="default",
+                timeout=10,
+            )
+        elif sys.platform == "win32":
+            toaster.show_toast(
+                title,
+                message,
+                duration=10,
+                threaded=True,
+            )
+        else:
+            logger.debug("System notifications are not supported on this platform")
+            return
+
         logger.debug("System notification sent successfully")
     except Exception as e:
         logger.error(f"Failed to send system notification: {e}")
