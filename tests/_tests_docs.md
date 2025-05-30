@@ -2,9 +2,11 @@
 
 This document provides detailed information about the test suite for dbt-heartbeat.
 
+__Note:__ To run the unit/integration tests locally, you need to have string values instantiated for the `DBT_CLOUD_API_KEY` and `DBT_CLOUD_ACCOUNT_ID` environment vars.
+
 ## Test Structure
 
-### 1. Main Tests (`tests/test_main.py`)
+### 1. Main Tests
 
 - `test_main_with_valid_job_id`: Verifies basic job monitoring functionality
 - `test_custom_poll_interval`: Tests custom polling interval configuration
@@ -12,7 +14,7 @@ This document provides detailed information about the test suite for dbt-heartbe
 - `test_main_with_invalid_job_id`: Tests error handling for invalid job IDs
 - `test_main_with_missing_env_vars`: Verifies environment variable validation
 
-### 2. Integration Tests (`tests/test_integration.py`)
+### 2. Integration Tests
 
 - `test_end_to_end_flow`: Verifies complete job monitoring workflow
 - `test_mock_api_integration`: Tests API and JobMonitor interaction
@@ -20,15 +22,21 @@ This document provides detailed information about the test suite for dbt-heartbe
 - `test_api_error_handling`: Tests API error scenarios
 - `test_malformed_api_response`: Tests handling of malformed API responses
 
-### 3. Notification Tests (`tests/test_notifications.py`)
+### 3. Notification Tests
 
+#### macOS Notifications
 - `test_notification_cancelled_mock`: Tests cancelled job notifications
 - `test_notification_error_mock`: Tests error job notifications
 
+#### Windows Notifications
+- `test_windows_notification_cancelled_mock`: Tests Windows cancelled job notifications
+- `test_windows_notification_error_mock`: Tests Windows error job notifications
+- `test_windows_notification_success_mock`: Tests Windows success job notifications
+- `test_windows_notification_parameters`: Tests Windows notification parameters (duration, threading)
 
-### 4. Configuration Tests
-- `test_partial_environment_variables`: Tests environment variable validation
-- `test_invalid_environment_variables`: Tests invalid environment variable handling
+### 4. Environment Validation Tests
+- `test_partial_environment_variables`: Tests behavior when only one of the required environment variables is set
+- `test_invalid_environment_variables`: Tests handling of invalid environment variables (empty strings, invalid IDs)
 
 ## Test Fixtures (`conftest.py`)
 
@@ -38,12 +46,11 @@ The `conftest.py` file contains reusable test fixtures that are available to all
 
 - `mock_dbt_api()`: Mocks `DbtCloudApi` class
 - `mock_job_monitor()`: Mocks `JobMonitor` class
-- `mock_platform()`: Mocks macOS platform
+- `mock_platform()`: Mocks platform-specific behavior (macOS/Windows)
 - `sample_job_run_data()`: Consistent sample data as returned by `DbtCloudApi`
-- `job_states()`: Provides different scenarios for tests
+- `job_states()`: Provides different scenarios for tests (success, error, cancelled)
 - `mock_env_vars()`: Sets up environment variables for testing
 - `mock_sys_argv()`: Provides a way to mock command-line arguments
-
 
 ### Usage in Tests
 
@@ -86,7 +93,11 @@ The tests use Python's `unittest.mock` to mock external dependencies:
 
 2. **System Notifications**
    ```python
+   # macOS notifications
    @patch('utils.notifications.os_notifs.Notifier.notify')
+   
+   # Windows notifications
+   @patch('utils.notifications.os_notifs.win10toast')
    ```
 
 3. **Environment Variables**
@@ -95,6 +106,11 @@ The tests use Python's `unittest.mock` to mock external dependencies:
        'DBT_CLOUD_API_KEY': 'test_key',
        'DBT_CLOUD_ACCOUNT_ID': 'test_account'
    })
+   ```
+
+4. **Platform Detection**
+   ```python
+   @patch('utils.notifications.os_notifs.sys')
    ```
 
 ## Running Tests
@@ -109,6 +125,7 @@ pytest
 pytest tests/test_main.py
 pytest tests/test_integration.py
 pytest tests/test_notifications.py
+pytest tests/test_environment.py
 
 # Run with verbose output
 pytest -v
