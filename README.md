@@ -1,6 +1,6 @@
 # dbt-heartbeat
 
-A CLI tool to monitor individual dbt Cloud run jobs and receive macOS notifications when they complete.
+A CLI tool to monitor individual dbt Cloud run jobs and receive OS notifications when they complete.
 
 ## Why This Exists
 
