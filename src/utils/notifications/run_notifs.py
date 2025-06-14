@@ -1,5 +1,7 @@
 import logging
 import sys
+import os
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -74,3 +76,75 @@ def send_system_notification(job_details: dict):
         logger.debug("System notification sent successfully")
     except Exception as e:
         logger.error(f"Failed to send system notification: {e}")
+
+
+def send_slack_notification(job_details: dict):
+    """
+    Send a notification to Slack using a webhook URL.
+    Note: Need SLACK_WEBHOOK_URL environment variable.
+    Args:
+        job_details (dict): The job details including name, status, duration, etc.
+    """
+    if not job_details:
+        logger.error("No job details received for Slack notification")
+        return
+
+    webhook_url = os.getenv("SLACK_WEBHOOK_URL")
+    if not webhook_url:
+        logger.error("SLACK_WEBHOOK_URL environment variable not set")
+        return
+
+    emoji = get_status_emoji(job_details)
+    
+    # Create Slack message blocks
+    blocks = [
+        {
+            "type": "header",
+            "text": {
+                "type": "plain_text",
+                "text": f"{emoji} dbt Job Status Update"
+            }
+        },
+        {
+            "type": "section",
+            "fields": [
+                {
+                    "type": "mrkdwn",
+                    "text": f"*Job:*\n{job_details.get('name', 'Unknown')}"
+                },
+                {
+                    "type": "mrkdwn",
+                    "text": f"*Status:*\n{job_details.get('status', 'Unknown')}"
+                },
+                {
+                    "type": "mrkdwn",
+                    "text": f"*Duration:*\n{job_details.get('duration', 'Unknown')}"
+                },
+                {
+                    "type": "mrkdwn",
+                    "text": f"*Completed:*\n{job_details.get('finished_at', 'Unknown')}"
+                }
+            ]
+        }
+    ]
+
+    # Add error message block if job failed
+    if job_details.get("is_error"):
+        blocks.append({
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f"*Error:*\n{job_details.get('error_message', 'No error message available')}"
+            }
+        })
+
+    try:
+        response = requests.post(
+            webhook_url,
+            json={"blocks": blocks},
+            timeout=10
+        )
+        response.raise_for_status()
+        logger.debug("Slack notification sent successfully")
+    except Exception as e:
+        logger.error(f"Failed to send Slack notification: {e}")
