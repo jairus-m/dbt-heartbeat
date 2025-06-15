@@ -59,6 +59,26 @@ The following environment variables are required and must be properly set:
 
 The tool will validate these variables before starting and will notify you if any are missing or invalid.
 
+### Setting up Slack Notifications
+
+To receive Slack notifications, you'll need to create your own Slack App and configure an Incoming Webhook URL. Here's the process:
+
+1. Go to [api.slack.com/apps](https://api.slack.com/apps)
+2. Click "Create New App"
+3. Choose "From scratch"
+4. Name the app (e.g., "dbt-heartbeat") and select the workspace
+5. Under "Features" → "Incoming Webhooks":
+   - Turn on "Activate Incoming Webhooks"
+   - Click "Add New Webhook to Workspace"
+   - Choose a specific channel (or a DM with yourslef) where notifications should appear
+   - Copy the Webhook URL provided
+6. Set up the environment variable in your terminal session or shell configuration file:
+   ```bash
+   SLACK_WEBHOOK_URL="https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+   ```
+
+Once configured, you can use the `--slack` flag when running `dh` to send notifications to your specified Slack channel and/or DMs.
+
 #### For global export
 If you want to persist the environment variables in all terminal sessions without having to utilize a `.env` file or manually exporting the variables in your terminal session, you can add the export commands to your shell configuration file. (persisted)
 ```bash
