@@ -80,6 +80,7 @@ def main():
         help="Time in seconds between polls (default: 30)",
     )
     parser.add_argument(
+        "-s",
         "--slack",
         action="store_true",
         help="Send notifications to Slack (requires SLACK_WEBHOOK_URL environment variable)",
