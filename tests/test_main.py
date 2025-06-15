@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from dbt_heartbeat.main import main
 
 
@@ -121,3 +121,77 @@ def test_log_level_changes(
 
     # Verify debug messages are not logged
     assert not any(record.levelname == "DEBUG" for record in caplog.records)
+
+
+@patch("dbt_heartbeat.main.job_monitor")
+@patch("dbt_heartbeat.main.dbt_api")
+@patch("utils.notifications.run_notifs.requests.post")
+@patch("utils.notifications.run_notifs.os.getenv")
+def test_slack_flag_long(
+    mock_getenv,
+    mock_slack_post,
+    mock_dbt_api,
+    mock_job_monitor,
+    sample_job_run_data,
+    mock_job_run_info,
+    mock_sys_argv,
+):
+    """Test that the --slack flag triggers Slack notifications."""
+    # Setup mocks
+    mock_job_monitor.monitor_job.return_value = sample_job_run_data
+    mock_dbt_api.get_job_run_info.return_value = mock_job_run_info
+    mock_getenv.return_value = "https://hooks.slack.com/services/test/webhook/url"
+    mock_slack_response = MagicMock()
+    mock_slack_response.raise_for_status.return_value = None
+    mock_slack_post.return_value = mock_slack_response
+
+    with mock_sys_argv("12345", "--slack"):
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+        assert exc_info.value.code == 0
+
+    # Verify Slack notification was sent
+    mock_slack_post.assert_called_once()
+    call_args = mock_slack_post.call_args
+    assert call_args[0][0] == "https://hooks.slack.com/services/test/webhook/url"
+    blocks = call_args[1]["json"]["blocks"]
+    assert blocks[0]["text"]["text"] == "✅ dbt Job Status Update"
+    assert any("Test Job" in field["text"] for field in blocks[1]["fields"])
+    assert any("Success" in field["text"] for field in blocks[1]["fields"])
+
+
+@patch("dbt_heartbeat.main.job_monitor")
+@patch("dbt_heartbeat.main.dbt_api")
+@patch("utils.notifications.run_notifs.requests.post")
+@patch("utils.notifications.run_notifs.os.getenv")
+def test_slack_flag_short(
+    mock_getenv,
+    mock_slack_post,
+    mock_dbt_api,
+    mock_job_monitor,
+    sample_job_run_data,
+    mock_job_run_info,
+    mock_sys_argv,
+):
+    """Test that the -s flag triggers Slack notifications."""
+    # Setup mocks
+    mock_job_monitor.monitor_job.return_value = sample_job_run_data
+    mock_dbt_api.get_job_run_info.return_value = mock_job_run_info
+    mock_getenv.return_value = "https://hooks.slack.com/services/test/webhook/url"
+    mock_slack_response = MagicMock()
+    mock_slack_response.raise_for_status.return_value = None
+    mock_slack_post.return_value = mock_slack_response
+
+    with mock_sys_argv("12345", "-s"):
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+        assert exc_info.value.code == 0
+
+    # Verify Slack notification was sent
+    mock_slack_post.assert_called_once()
+    call_args = mock_slack_post.call_args
+    assert call_args[0][0] == "https://hooks.slack.com/services/test/webhook/url"
+    blocks = call_args[1]["json"]["blocks"]
+    assert blocks[0]["text"]["text"] == "✅ dbt Job Status Update"
+    assert any("Test Job" in field["text"] for field in blocks[1]["fields"])
+    assert any("Success" in field["text"] for field in blocks[1]["fields"])
