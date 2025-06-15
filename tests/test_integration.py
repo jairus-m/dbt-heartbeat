@@ -16,7 +16,7 @@ def test_end_to_end_flow(capsys):
     with patch("dbt_heartbeat.main.job_monitor") as mock_monitor, patch(
         "dbt_heartbeat.main.dbt_api"
     ) as mock_api, patch(
-        "utils.notifications.os_notifs.Notifier.notify"
+        "utils.notifications.run_notifs.Notifier.notify"
     ) as mock_notify:
         # Setup mock responses
         mock_monitor.monitor_job.return_value = {

@@ -25,7 +25,7 @@ def test_main_without_job_id(capsys, mock_sys_argv):
 
 @patch("dbt_heartbeat.main.job_monitor")
 @patch("dbt_heartbeat.main.dbt_api")
-@patch("utils.notifications.os_notifs.Notifier")
+@patch("utils.notifications.run_notifs.Notifier")
 def test_main_with_valid_job_id(
     mock_notifier,
     mock_dbt_api,
@@ -62,7 +62,7 @@ def test_main_with_missing_env_vars(mock_validate_env_vars, mock_sys_argv):
 
 @patch("dbt_heartbeat.main.job_monitor")
 @patch("dbt_heartbeat.main.dbt_api")
-@patch("utils.notifications.os_notifs.Notifier")
+@patch("utils.notifications.run_notifs.Notifier")
 def test_custom_poll_interval(
     mock_notifier,
     mock_dbt_api,
@@ -87,7 +87,7 @@ def test_custom_poll_interval(
 
 @patch("dbt_heartbeat.main.job_monitor")
 @patch("dbt_heartbeat.main.dbt_api")
-@patch("utils.notifications.os_notifs.Notifier")
+@patch("utils.notifications.run_notifs.Notifier")
 def test_log_level_changes(
     mock_dbt_api,
     mock_job_monitor,
