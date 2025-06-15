@@ -95,55 +95,67 @@ def send_slack_notification(job_details: dict):
         return
 
     emoji = get_status_emoji(job_details)
-    
+
+    # Get dbt Cloud job URL from job details
+    dbt_cloud_url = job_details.get("href")
+    if not dbt_cloud_url:
+        logger.warning("No href found in job details, constructing URL manually")
+        account_id = os.getenv("DBT_CLOUD_ACCOUNT_ID")
+        job_run_id = job_details.get("run_id")
+        dbt_cloud_url = (
+            f"https://cloud.getdbt.com/#/accounts/{account_id}/runs/{job_run_id}/"
+        )
+
     # Create Slack message blocks
     blocks = [
         {
             "type": "header",
-            "text": {
-                "type": "plain_text",
-                "text": f"{emoji} dbt Job Status Update"
-            }
+            "text": {"type": "plain_text", "text": f"{emoji} dbt Job Status Update"},
         },
         {
             "type": "section",
             "fields": [
                 {
                     "type": "mrkdwn",
-                    "text": f"*Job:*\n{job_details.get('name', 'Unknown')}"
+                    "text": f"*Job:*\n{job_details.get('name', 'Unknown')}",
                 },
                 {
                     "type": "mrkdwn",
-                    "text": f"*Status:*\n{job_details.get('status', 'Unknown')}"
+                    "text": f"*Status:*\n{job_details.get('status', 'Unknown')}",
                 },
                 {
                     "type": "mrkdwn",
-                    "text": f"*Duration:*\n{job_details.get('duration', 'Unknown')}"
+                    "text": f"*Duration:*\n{job_details.get('duration', 'Unknown')}",
                 },
                 {
                     "type": "mrkdwn",
-                    "text": f"*Completed:*\n{job_details.get('finished_at', 'Unknown')}"
-                }
-            ]
-        }
+                    "text": f"*Completed:*\n{job_details.get('finished_at', 'Unknown')}",
+                },
+            ],
+        },
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": f"*View Job Run:* <{dbt_cloud_url}|Click here>",
+            },
+        },
     ]
 
     # Add error message block if job failed
     if job_details.get("is_error"):
-        blocks.append({
-            "type": "section",
-            "text": {
-                "type": "mrkdwn",
-                "text": f"*Error:*\n{job_details.get('error_message', 'No error message available')}"
+        blocks.append(
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": f"*Error:*\n{job_details.get('error_message', 'No error message available')}",
+                },
             }
-        })
+        )
 
     try:
-        response = requests.post(
-            webhook_url,
-            json={"blocks": blocks},
-            timeout=10
-        )
+        response = requests.post(webhook_url, json={"blocks": blocks}, timeout=10)
         response.raise_for_status()
         logger.debug("Slack notification sent successfully")
     except Exception as e:
