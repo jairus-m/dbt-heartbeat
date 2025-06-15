@@ -1,6 +1,6 @@
 # dbt-heartbeat
 
-A CLI tool to monitor individual dbt Cloud run jobs and receive OS notifications when they complete.
+A CLI tool to monitor individual dbt Cloud run jobs and receive OS/Slack notifications when they complete.
 
 ## Why This Exists
 
@@ -14,11 +14,9 @@ All you need is a dbt Cloud developer PAT, dbt Cloud account ID, and a specific 
 ## Features
 
 - Poll dbt Cloud job runs and monitor their status
-- Cute terminal output with color-coded status updates xD
-- System notifications for job completion (alerts sent to Mac/Windows OS notifications)
-- Configurable polling interval
+- Terminal output with color-coded status updates
 - Can control the log level of the CLI output
-- Detailed job run status information once complete in CLI + system notifications
+- Detailed job run status information once complete in the CLI + System/Slack notifications
 
 ## Prerequisites
 
@@ -72,7 +70,7 @@ To receive Slack notifications, you'll need to create your own Slack App and con
    - Click "Add New Webhook to Workspace"
    - Choose a specific channel (or a DM with yourslef) where notifications should appear
    - Copy the Webhook URL provided
-6. Set up the environment variable in your terminal session or shell configuration file:
+6. Set up a `SLACK_WEBHOOK_URL` environment variable in your terminal session or shell configuration file:
    ```bash
    SLACK_WEBHOOK_URL="https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
    ```
@@ -119,12 +117,16 @@ __Note:__ You can find the `<job_run_id>` in the dbt Cloud UI:
 - `--log-level`: Set the logging level (default: INFO)
   - Choices: DEBUG, INFO, WARNING, ERROR, CRITICAL
 - `--poll-interval`: Time in seconds between polls (default: 30)
+- `--slack`: Send notifications to Slack (requires SLACK_WEBHOOK_URL environment variable)
 
 ### Example
 
 ```bash
-# Poll run job with default settings
+# Poll run job with default settings (system OS notifications)
 dh 123456
+
+# Poll run job with default settings and send message to slack
+dh 123456 --slack
 
 # Poll run job with debug logging and 15-second interval
 dh 123456 --log-level DEBUG --poll-interval 15
