@@ -100,6 +100,8 @@ def main():
 
     # Validate environment variables
     required_vars = ["DBT_CLOUD_API_KEY", "DBT_CLOUD_ACCOUNT_ID"]
+    if args.slack:
+        required_vars.append("SLACK_WEBHOOK_URL")
     missing_vars = validate_environment_vars(required_vars)
     if missing_vars:
         logger.error(f"Missing environment variables: {missing_vars}")
