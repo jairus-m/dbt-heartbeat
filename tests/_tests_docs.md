@@ -13,10 +13,13 @@ __Note:__ To run the unit/integration tests locally, you need to have string val
 - `test_log_level_changes`: Verifies different log level settings
 - `test_main_with_invalid_job_id`: Tests error handling for invalid job IDs
 - `test_main_with_missing_env_vars`: Verifies environment variable validation
+- `test_slack_flag_long`: Tests the `--slack` flag for Slack notifications
+- `test_slack_flag_short`: Tests the `-s` flag for Slack notifications
 
 ### 2. Integration Tests
 
 - `test_end_to_end_flow`: Verifies complete job monitoring workflow
+- `test_end_to_end_flow_with_slack`: Verifies complete workflow with Slack notifications
 - `test_mock_api_integration`: Tests API and JobMonitor interaction
 - `test_empty_api_response`: Tests handling of empty API responses
 - `test_api_error_handling`: Tests API error scenarios
@@ -34,9 +37,15 @@ __Note:__ To run the unit/integration tests locally, you need to have string val
 - `test_windows_notification_success_mock`: Tests Windows success job notifications
 - `test_windows_notification_parameters`: Tests Windows notification parameters (duration, threading)
 
+#### Slack Notifications
+- `test_notification_success_slack_mock`: Tests successful job notifications sent to Slack
+- `test_notification_error_slack_mock`: Tests error job notifications sent to Slack
+- `test_notification_cancelled_slack_mock`: Tests cancelled job notifications sent to Slack
+
 ### 4. Environment Validation Tests
 - `test_partial_environment_variables`: Tests behavior when only one of the required environment variables is set
 - `test_invalid_environment_variables`: Tests handling of invalid environment variables (empty strings, invalid IDs)
+- `test_slack_flag_missing_webhook`: Tests behavior when Slack webhook URL is not set
 
 ## Test Fixtures (`conftest.py`)
 
@@ -94,23 +103,28 @@ The tests use Python's `unittest.mock` to mock external dependencies:
 2. **System Notifications**
    ```python
    # macOS notifications
-   @patch('utils.notifications.os_notifs.Notifier.notify')
+   @patch('utils.notifications.run_notifs.Notifier.notify')
    
    # Windows notifications
-   @patch('utils.notifications.os_notifs.win10toast')
+   @patch('utils.notifications.run_notifs.win10toast')
+
+   # Slack notifications
+   @patch('utils.notifications.run_notifs.requests.post')
+   @patch('utils.notifications.run_notifs.os.getenv')
    ```
 
 3. **Environment Variables**
    ```python
    @patch.dict(os.environ, {
        'DBT_CLOUD_API_KEY': 'test_key',
-       'DBT_CLOUD_ACCOUNT_ID': 'test_account'
+       'DBT_CLOUD_ACCOUNT_ID': 'test_account',
+       'SLACK_WEBHOOK_URL': 'https://hooks.slack.com/services/test/webhook/url'
    })
    ```
 
 4. **Platform Detection**
    ```python
-   @patch('utils.notifications.os_notifs.sys')
+   @patch('utils.notifications.run_notifs.sys')
    ```
 
 ## Running Tests

@@ -3,7 +3,7 @@ import logging
 import argparse
 
 from utils.api import DbtCloudApi, JobMonitor
-from utils.notifications import send_system_notification
+from utils.notifications import send_system_notification, send_slack_notification
 from utils.config import validate_environment_vars, load_env_vars
 from utils.display import print_job_status, print_missing_env_vars
 from utils.version import check_version, get_current_version
@@ -80,6 +80,12 @@ def main():
         help="Time in seconds between polls (default: 30)",
     )
     parser.add_argument(
+        "-s",
+        "--slack",
+        action="store_true",
+        help="Send notifications to Slack (requires SLACK_WEBHOOK_URL environment variable)",
+    )
+    parser.add_argument(
         "--version",
         action="version",
         version=f"%(prog)s {__version__}",
@@ -95,6 +101,8 @@ def main():
 
     # Validate environment variables
     required_vars = ["DBT_CLOUD_API_KEY", "DBT_CLOUD_ACCOUNT_ID"]
+    if args.slack:
+        required_vars.append("SLACK_WEBHOOK_URL")
     missing_vars = validate_environment_vars(required_vars)
     if missing_vars:
         logger.error(f"Missing environment variables: {missing_vars}")
@@ -121,9 +129,13 @@ def main():
     logger.debug(f"Job completed with final status: {status}")
     print_job_status(status)
 
-    # Send system notification with job run info
-    logger.debug("Attempting to send system notification...")
-    send_system_notification(job_run_info)
+    # Send notifications based on flags
+    if args.slack:
+        logger.debug("Attempting to send Slack notification...")
+        send_slack_notification(job_run_info)
+    else:
+        logger.debug("Attempting to send system notification...")
+        send_system_notification(job_run_info)
 
     sys.exit(0)
 
