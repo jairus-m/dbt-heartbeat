@@ -41,8 +41,7 @@ jobs:
       
       - name: Run ruff
         run: |
-          uv tool install ruff
-          ruff check .
+          uvx ruff check .
 
   unit-tests:
     if: github.event_name == 'pull_request'
