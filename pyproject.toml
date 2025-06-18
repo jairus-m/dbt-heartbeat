@@ -1,6 +1,6 @@
 [project]
 name = "dbt-heartbeat"
-version = "0.2.3"
+version = "0.2.4"
 description = "A CLI tool to monitor individual dbt Cloud run jobs and receive OS notifications when they complete."
 requires-python = ">=3.8"
 authors = [
