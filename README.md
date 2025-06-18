@@ -85,9 +85,4 @@ __Note:__ You can find the `<job_run_id>` in the dbt Cloud UI:
 
 #### Slack App Notification
 <img width="1336" alt="Screenshot 2025-06-16 at 10 52 12 AM" src="https://github.com/user-attachments/assets/8e5d62b3-a454-42c8-a232-7267ae1e702d" />
-
-
-#### Note on Internal Slack App for Webhook URL Generation
-- A single app can be shared within a workspace so that end users don't have to repeteadly create a Slack app from scratch just to generate their own unique webhook URL
-- As an example, I created a `dbt-heartbeat` Slack App in my company's workspace and authorized the incoming webhook URL to post messages to the Slack App's Direct Message
-  - This app can be reused and shared with others to configure their own unique webhook URLs for posting messages from `dh`
+Note that in the example above, I created a Slack App in my company's workspace and authorized the incoming webhook URL to post messages directly to the Slack App's Direct Messages
