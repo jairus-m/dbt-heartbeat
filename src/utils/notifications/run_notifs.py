@@ -5,7 +5,6 @@ import requests
 
 logger = logging.getLogger(__name__)
 
-# Import platform-specific notification modules
 if sys.platform == "darwin":
     from pync import Notifier
 elif sys.platform == "win32":
@@ -44,11 +43,9 @@ def send_system_notification(job_details: dict):
 
     emoji = get_status_emoji(job_details)
 
-    # Create notification title and message
     title = f"{emoji} dbt Job Status Update"
     message = f"Job: {job_details.get('name', 'Unknown')}\nStatus: {job_details.get('status', 'Unknown')}\nDuration: {job_details.get('duration', 'Unknown')}\nCompleted: {job_details.get('finished_at', 'Unknown')}"
 
-    # Add error message if job failed
     if job_details.get("is_error"):
         message += (
             f"\nError: {job_details.get('error_message', 'No error message available')}"
@@ -96,7 +93,6 @@ def send_slack_notification(job_details: dict):
 
     emoji = get_status_emoji(job_details)
 
-    # Get dbt Cloud job URL from job details
     dbt_cloud_url = job_details.get("href")
     if not dbt_cloud_url:
         logger.warning("No href found in job details, constructing URL manually")
@@ -106,7 +102,6 @@ def send_slack_notification(job_details: dict):
             f"https://cloud.getdbt.com/#/accounts/{account_id}/runs/{job_run_id}/"
         )
 
-    # Create Slack message blocks
     blocks = [
         {
             "type": "header",
@@ -142,7 +137,6 @@ def send_slack_notification(job_details: dict):
         },
     ]
 
-    # Add error message block if job failed
     if job_details.get("is_error"):
         blocks.append(
             {

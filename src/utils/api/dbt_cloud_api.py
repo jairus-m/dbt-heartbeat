@@ -113,7 +113,6 @@ class DbtCloudApi:
             dict: Formatted job information including name, status, duration, and completion time
         """
         try:
-            # Get run details
             run_data = self.get_run_details(run_id)
             if not run_data:
                 logger.error("No run data found")
@@ -122,9 +121,8 @@ class DbtCloudApi:
             logger.debug(f"Run data received: {run_data}")
             logger.debug(f"Run steps from run data: {run_data.get('run_steps', [])}")
 
-            # Get job details if we have a job_id
             job_data = {}
-            job_id = run_data.get("job_id")  # Get job_id directly from run data
+            job_id = run_data.get("job_id")
             if job_id:
                 job_data = self.get_job_details(job_id)
                 if not job_data:
@@ -137,7 +135,6 @@ class DbtCloudApi:
             else:
                 logger.debug("No job ID found in run data, using run data only")
 
-            # Format the end time in local time
             finished_at = run_data.get("finished_at")
             if finished_at:
                 try:
@@ -152,15 +149,11 @@ class DbtCloudApi:
             else:
                 finished_at = "Unknown"
 
-            # Get run duration and queued duration
             run_duration = run_data.get("run_duration_humanized", "Unknown")
             queued_duration = run_data.get("queued_duration_humanized", "Unknown")
 
-            # Build the response dictionary with safe gets
             response = {
-                "name": job_data.get(
-                    "name", "Unknown"
-                ),  # We'll get the name from job details if available
+                "name": job_data.get("name", "Unknown"),
                 "status": run_data.get("status_humanized", "Unknown"),
                 "duration": run_data.get("duration_humanized", "Unknown"),
                 "run_duration": run_duration,
@@ -174,9 +167,7 @@ class DbtCloudApi:
                 "run_id": run_data.get("id"),
                 "job_id": job_id,
                 "href": run_data.get("href"),
-                "run_steps": job_data.get(
-                    "execute_steps", []
-                ),  # Use execute_steps from job data
+                "run_steps": job_data.get("execute_steps", []),
                 "in_progress": run_data.get("in_progress", False),
             }
 

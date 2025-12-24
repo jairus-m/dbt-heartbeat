@@ -57,7 +57,6 @@ def print_job_details(job_data: dict):
         console.print("[red]Error: No job data received[/red]")
         return
 
-    # Create a table for the job details
     table = Table(show_header=True, header_style="bold magenta")
     table.add_column("Field", style="cyan")
     table.add_column("Value", style="white")
@@ -74,7 +73,6 @@ def print_job_details(job_data: dict):
         error_msg = job_data.get("error_message", "No error message available")
         table.add_row("Error", error_msg)
 
-    # Print the table in a panel
     console.print(Panel(table, title="dbt Cloud Job Status", border_style="blue"))
     logger.debug("Job status table printed")
 
@@ -103,7 +101,6 @@ def print_initial_job_info(job_data: dict):
             console.print(f"\n[blue]Job Name: {job_data.get('name', 'Unknown')}[/blue]")
             console.print(f"[blue]Job URL: {job_data.get('href')}[/blue]")
 
-            # Print execution steps
             run_steps = job_data.get("run_steps", [])
             logger.debug(f"Found {len(run_steps)} run steps")
             if run_steps:

@@ -13,14 +13,12 @@ def load_env_vars() -> tuple[str | None, str | None]:
     Returns:
         tuple[str | None, str | None]: Tuple of (api_key, account_id)
     """
-    # Check for environment variables before loading .env
     api_key = os.getenv("DBT_CLOUD_API_KEY")
     account_id = os.getenv("DBT_CLOUD_ACCOUNT_ID")
 
     if api_key and account_id:
         logger.debug("Using environment variables from terminal session")
     else:
-        # Load from .env file if variables aren't in environment
         logger.debug("Loading environment variables from .env file")
         load_dotenv(override=False)  # Don't override existing env vars
         api_key = os.getenv("DBT_CLOUD_API_KEY")

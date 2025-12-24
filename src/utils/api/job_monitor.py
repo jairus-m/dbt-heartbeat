@@ -50,7 +50,6 @@ class JobMonitor:
         """
         print_polling_start(job_run_id, poll_interval)
 
-        # Print job info and execution steps at the start
         try:
             job_data = self.api.get_job_run_info(job_run_id)
             print_initial_job_info(job_data)
@@ -62,10 +61,8 @@ class JobMonitor:
                 logger.debug("Fetching job status...")
                 job_data = self.api.get_job_run_info(job_run_id)
 
-                # Print current status
                 print_current_status(job_data)
 
-                # Check if job is complete
                 if not job_data.get("in_progress"):
                     logger.debug("Job is no longer in progress")
                     print_job_details(job_data)
