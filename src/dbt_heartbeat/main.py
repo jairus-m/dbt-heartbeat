@@ -22,10 +22,6 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    """
-    Main function to handle command line arguments and start polling.
-    """
-    # Create a basic parser just for log level
     log_parser = argparse.ArgumentParser(add_help=False)
     log_parser.add_argument(
         "--log-level",
@@ -34,10 +30,8 @@ def main():
         help="Set the logging level (default: INFO)",
     )
 
-    # Parse just the log level argument
     log_args, _ = log_parser.parse_known_args()
 
-    # Setup logging with the specified level
     log_level = getattr(logging, log_args.log_level.upper())
     logging.getLogger().setLevel(log_level)
     for logger_name in [
@@ -50,17 +44,14 @@ def main():
     ]:
         logging.getLogger(logger_name).setLevel(log_level)
 
-    # Load environment variables
     load_env_vars()
 
-    # Check for version flag
     if "--version" in sys.argv:
         check_version()
         # Let argparse handle the version display and exit
         sys.argv.remove("--version")
         sys.argv.append("--version")
 
-    # Create the main parser
     parser = argparse.ArgumentParser(
         description="Poll dbt Cloud job statuses for specific runs.\n"
         "\nRequires environment variables DBT_CLOUD_API_KEY and DBT_CLOUD_ACCOUNT_ID to be set.",
@@ -94,12 +85,10 @@ def main():
 
     args = parser.parse_args()
 
-    # If no job_run_id is provided, show help
     if args.job_run_id is None:
         parser.print_help()
         sys.exit(1)
 
-    # Validate environment variables
     required_vars = ["DBT_CLOUD_API_KEY", "DBT_CLOUD_ACCOUNT_ID"]
     if args.slack:
         required_vars.append("SLACK_WEBHOOK_URL")
@@ -109,27 +98,22 @@ def main():
         print_missing_env_vars(missing_vars)
         sys.exit(1)
 
-    # Monitor the job
     job_run_data = job_monitor.monitor_job(args.job_run_id, args.poll_interval)
 
-    # Get job details using the job ID from the run data
     job_id = job_run_data.get("job_id")
     if not job_id:
         logger.error("No job ID found in run data")
         sys.exit(1)
 
-    # Get the formatted job run info which has all the humanized fields
     job_run_info = dbt_api.get_job_run_info(args.job_run_id)
     if not job_run_info:
         logger.error("Failed to get job run info")
         sys.exit(1)
 
-    # Get status from the job run info
     status = job_run_info.get("status", "Unknown")
     logger.debug(f"Job completed with final status: {status}")
     print_job_status(status)
 
-    # Send notifications based on flags
     if args.slack:
         logger.debug("Attempting to send Slack notification...")
         send_slack_notification(job_run_info)
